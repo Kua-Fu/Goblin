@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>goblin</title>
+    <link rel="icon" href="/assets/goblin-logo.png" type="image/png" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <button id="brand-home" class="brand" type="button" aria-label="返回主界面并刷新" data-i18n-attr="aria-label:brand.homeAria">
+          <img class="brand-logo" src="/assets/goblin-logo.png" alt="" aria-hidden="true" />
+          <div>
+            <h1>goblin</h1>
+            <p id="source-line" data-i18n="brand.loading">读取本机 Codex 状态</p>
+          </div>
+        </button>
+        <div class="top-actions">
+          <label class="language-control" for="language-select">
+            <span data-i18n="controls.language">语言</span>
+            <select id="language-select" aria-label="语言" data-i18n-attr="aria-label:controls.language">
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <button id="refresh-now" class="refresh-now" type="button" data-i18n="controls.refreshNow">立即刷新</button>
+          <label class="refresh-control" for="refresh-interval">
+            <span data-i18n="controls.autoRefresh">自动刷新</span>
+            <select id="refresh-interval" aria-label="自动刷新间隔" data-i18n-attr="aria-label:controls.refreshIntervalAria">
+              <option value="0" data-i18n="controls.off">关闭</option>
+              <option value="10000">10s</option>
+              <option value="30000" selected>30s</option>
+              <option value="60000">1min</option>
+              <option value="300000">5min</option>
+            </select>
+            <span class="refresh-meter" aria-hidden="true">
+              <span id="refresh-progress"></span>
+            </span>
+            <span id="refresh-countdown" class="refresh-countdown" aria-live="polite">30s</span>
+          </label>
+        </div>
+      </header>
+
+      <section class="privacy-banner" aria-label="隐私说明" data-i18n-attr="aria-label:privacy.aria">
+        <strong data-i18n="privacy.title">所有数据只在本机读取和展示</strong>
+        <span data-i18n="privacy.body">goblin 完全本地运行，不上传、不埋点、不访问网页内容。</span>
+      </section>
+
+      <section id="metrics" class="metrics" aria-label="总览指标" data-i18n-attr="aria-label:regions.metrics"></section>
+
+      <section id="overview-visuals" class="overview-visuals" aria-label="Token 可视化" data-i18n-attr="aria-label:regions.visuals" hidden></section>
+
+      <main class="workspace">
+        <aside class="project-pane" aria-label="项目列表" data-i18n-attr="aria-label:regions.projects">
+          <div class="pane-header">
+            <div>
+              <span class="eyebrow">Projects</span>
+              <h2 data-i18n="headings.projects">项目</h2>
+            </div>
+            <select id="project-sort" aria-label="项目排序" data-i18n-attr="aria-label:controls.projectSort">
+              <option value="updated" data-i18n="sort.updated">最近更新</option>
+              <option value="threads" data-i18n="sort.threads">对话数量</option>
+              <option value="processes" data-i18n="sort.processes">进程数量</option>
+              <option value="tokens">Token</option>
+            </select>
+          </div>
+          <input id="project-search" class="search-input" type="search" placeholder="搜索路径、分支、模型" data-i18n-attr="placeholder:controls.projectSearch" />
+          <div id="project-list" class="project-list"></div>
+        </aside>
+
+        <section class="thread-pane" aria-label="对话列表" data-i18n-attr="aria-label:regions.threads">
+          <div class="pane-header">
+            <div>
+              <span class="eyebrow" id="project-path-label">Conversation</span>
+              <h2 id="project-title" data-i18n="headings.conversations">对话</h2>
+            </div>
+            <select id="thread-filter" aria-label="对话筛选" data-i18n-attr="aria-label:controls.threadFilter">
+              <option value="all" data-i18n="filters.all">全部</option>
+              <option value="active" data-i18n="filters.active">有进程</option>
+              <option value="snapshots" data-i18n="filters.snapshots">有快照</option>
+              <option value="archived" data-i18n="filters.archived">已归档</option>
+            </select>
+          </div>
+          <div id="project-summary" class="summary-strip"></div>
+          <div id="thread-list" class="thread-list"></div>
+        </section>
+
+        <section class="detail-pane" aria-label="对话详情" data-i18n-attr="aria-label:regions.detail">
+          <div class="pane-header detail-header">
+            <div>
+              <span class="eyebrow" id="thread-id-label">Thread</span>
+              <h2 id="thread-title" data-i18n="headings.threadHistory">对话历史</h2>
+            </div>
+            <div class="tab-group" role="tablist" aria-label="详情视图" data-i18n-attr="aria-label:regions.detailTabs">
+              <button class="tab-button is-active" type="button" data-tab="timeline" data-i18n="tabs.timeline">时间线</button>
+              <button class="tab-button" type="button" data-tab="logs" data-i18n="tabs.logs">日志</button>
+              <button class="tab-button" type="button" data-tab="processes" data-i18n="tabs.processes">进程</button>
+            </div>
+          </div>
+          <div id="thread-meta" class="thread-meta"></div>
+          <div id="detail-content" class="detail-content"></div>
+        </section>
+      </main>
+
+      <section id="insight-page" class="insight-page" aria-live="polite" hidden></section>
+    </div>
+
+    <script src="/vendor/d3.min.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
