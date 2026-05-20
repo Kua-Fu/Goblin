@@ -3,10 +3,10 @@
 [English](./README.md) | [中文](./README.zh-CN.md)
 
 <p align="center">
-  <img src="./public/assets/goblin-logo.png" alt="goblin logo" width="180" />
+  <img src="./public/assets/goblin-logo.png" alt="goblin logo" width="150" />
 </p>
 
-<p>
+<p align="center">
   <img src="./docs/assets/badge-node.svg" alt="Node.js >= 20" height="28" />
   <img src="./docs/assets/badge-chrome.svg" alt="Chrome Extension" height="28" />
   <img src="./docs/assets/badge-sqlite.svg" alt="SQLite CLI" height="28" />
@@ -16,49 +16,43 @@
 
 <img src="./docs/assets/readme-hero.svg" alt="goblin 本地 Codex 项目观测工具" width="100%" />
 
-goblin 是一个完全本地运行的 Codex 项目观测工具，用来可视化 Codex 管理的项目、对话、对话历史、日志进程线索和 shell 快照。
+goblin 是一个本地优先的 Codex 项目观测台。它把 `~/.codex` 里已经存在的数据整理成可浏览的仪表盘，用来查看项目、对话、rollout 历史、进程线索、shell 快照和 token 使用量。
 
-它默认只读取当前机器上的数据，不上传、不埋点、不注入网页、不访问网页内容。Web UI 和 Chrome 插件 UI 都会明确标注：**所有数据只在本机读取和展示**。
+隐私边界很明确：**所有数据只在本机读取和展示**。goblin 不上传、不埋点、不注入网页，也不会访问云端服务。
 
-## 功能
+## 能看什么
 
-- 项目总览：按工作目录汇总 Codex 管理过的项目。
-- 对话浏览：查看每个项目下的对话、模型、分支、Token、归档状态和更新时间。
-- 历史时间线：解析 rollout JSONL，展示用户消息、助手消息和工具调用。
-- 进程线索：聚合日志里的 `process_uuid`，并结合本机 `ps` 信息展示活跃进程。
-- 本地快照：关联 Codex 保存的 shell snapshot，辅助回看执行上下文。
-- 中英文界面：默认中文，顶部可以切换英文。
-- Chrome 插件：无需启动本地 HTTP 服务，也可以使用观测台。
-
-## 本地优先
-
-goblin 的隐私边界很简单：
-
-- 不上传 Codex 对话、日志、项目路径、进程信息或源码片段。
-- 不包含 analytics、telemetry、crash reporting、广告或追踪 SDK。
-- Chrome 扩展没有 `host_permissions`，也不注入 content script。
-- Native Host 只接受固定 API 路由，不接受任意 SQL、shell 命令或文件路径。
-
-更完整的说明见 [PRIVACY.md](./PRIVACY.md)。
-
-## 依赖
-
-goblin 没有 npm 运行时依赖，主要依靠 Node.js 标准库和系统自带工具。
-
-| 依赖 | Logo | 用途 | 要求 |
-| --- | --- | --- | --- |
-| Node.js | <img src="./docs/assets/badge-node.svg" alt="Node.js" height="24" /> | 启动本地 Web 服务、运行 Native Host、测试和扩展构建脚本。 | `>=20` |
-| Google Chrome | <img src="./docs/assets/badge-chrome.svg" alt="Chrome" height="24" /> | 加载 unpacked extension，提供 Native Messaging 通道。 | Manifest V3 |
-| SQLite CLI | <img src="./docs/assets/badge-sqlite.svg" alt="SQLite" height="24" /> | 读取 Codex 的 `state_5.sqlite` 和 `logs_2.sqlite`。 | 需要 `sqlite3` 命令 |
-| Codex 本机缓存 | <img src="./docs/assets/badge-codex.svg" alt="Codex" height="24" /> | 提供项目、对话、rollout、日志和 shell snapshot 数据源。 | 默认 `~/.codex` |
+| 模块 | 适合回答 | 视图 |
+| --- | --- | --- |
+| 项目 | 哪些工作区活跃、最近更新、token 消耗最高？ | 项目列表、摘要卡片、项目 token atlas |
+| 对话 | 哪些线程 token 最多、哪些线程有快照或进程线索？ | 可搜索对话列表、Top-N、Pareto、表格 |
+| 时间线 | 一个 Codex 对话里实际发生了什么？ | 用户消息、助手消息、工具调用、工具输出 |
+| 进程 | Codex 日志里出现了哪些本机进程线索？ | 活跃进程卡片、按进程聚合的 trace |
+| Tokens | token 使用量随时间怎么变化？ | 全项目或单项目折线图 |
+| 插件 | 不启动本地 HTTP 服务能不能看仪表盘？ | Chrome popup + Native Messaging |
 
 ## 快速启动
+
+### 1. 依赖
+
+| 依赖 | 用途 | 要求 |
+| --- | --- | --- |
+| Node.js | 启动本地服务、运行测试、Native Host 和扩展构建脚本。 | `>=20` |
+| SQLite CLI | 读取 Codex 的 `state_5.sqlite` 和 `logs_2.sqlite`。 | 需要 `sqlite3` 命令 |
+| Codex 本机缓存 | 提供项目、对话、rollout、日志和 shell snapshot 数据。 | 默认 `~/.codex` |
+| Google Chrome | 加载 unpacked extension，并提供 Native Messaging 通道。 | Manifest V3 |
+
+goblin 没有 npm 运行时依赖。
+
+### 2. 启动 Web UI
 
 ```bash
 npm run dev
 ```
 
-默认地址是 `http://127.0.0.1:3001`。可以通过环境变量覆盖端口或 Codex 数据目录：
+打开 `http://127.0.0.1:3001`。
+
+可以通过环境变量覆盖端口或 Codex 数据目录：
 
 ```bash
 PORT=3010 CODEX_HOME=/path/to/.codex npm run dev
@@ -66,11 +60,19 @@ PORT=3010 CODEX_HOME=/path/to/.codex npm run dev
 
 Web UI 默认显示中文。顶部语言选择器可以切换到 English，偏好只保存在本机浏览器里。
 
-## 运行图
+## 运行截图
+
+下面的截图使用脱敏演示数据生成，路径、对话标题和使用量数字都可以安全展示。
+
+### 总览
+
+主界面保持高密度工作台布局：顶部是指标卡片，左侧是项目，中间是项目下的对话，右侧是选中对话的时间线。
+
+<img src="./docs/assets/readme-dashboard-zh.png" alt="goblin 中文总览界面" width="100%" />
 
 ### 项目 Atlas
 
-点击「项目」会打开项目级 token atlas。默认泡泡图可拖动，也可以切换为 Top-N 条形图、Pareto、Treemap 或表格。
+点击「项目」会进入项目级 token atlas。默认泡泡图可拖动，也可以切换为 Top-N 条形图、Pareto、Treemap 或表格。
 
 <img src="./docs/assets/readme-project-atlas-zh.png" alt="项目 token atlas 中文界面" width="100%" />
 
@@ -91,13 +93,19 @@ Chrome Extension UI
   -> 固定白名单内的 ~/.codex 数据源
 ```
 
-构建扩展目录：
+### 1. 构建扩展目录
 
 ```bash
 npm run build:extension
 ```
 
-在 Chrome 打开 `chrome://extensions`，开启开发者模式，选择 `dist/chrome-extension` 作为 unpacked extension。加载后复制扩展 ID，再安装 Native Host：
+### 2. 在 Chrome 加载
+
+打开 `chrome://extensions`，开启开发者模式，选择 `dist/chrome-extension` 作为 unpacked extension。
+
+### 3. 安装 Native Host
+
+加载后复制扩展 ID，再执行：
 
 ```bash
 npm run install:native-host -- <extension-id>
@@ -109,34 +117,43 @@ macOS 上会写入：
 ~/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.goblin.codex_local_viewer.json
 ```
 
-Native Host manifest 会通过 `allowed_origins` 只允许这个扩展 ID 连接。
+安装脚本还会在 manifest 旁边创建一个可执行 launcher。Chrome 启动 Native Messaging Host 时只有很少的 GUI 环境变量，所以 launcher 会使用安装时捕获到的 Node.js 绝对路径。
 
-安装脚本还会在 manifest 旁边创建一个可执行 launcher。Chrome 启动 Native Messaging Host 时只有很少的 GUI 环境变量，所以 launcher 会使用安装时捕获到的 Node.js 绝对路径，不依赖 `env node`。
+如果 popup 显示 `Native host has exited`，用当前扩展 ID 重新安装 Native Host，然后在 `chrome://extensions` 里重新加载扩展，再点击「检查本机组件」。
 
-如果 popup 显示 `Native host has exited`，用当前扩展 ID 重新安装 Native Host：
+## 隐私边界
 
-```bash
-npm run install:native-host -- <extension-id>
-```
+goblin 的边界保持简单清晰：
 
-然后在 `chrome://extensions` 里重新加载扩展，再点击「检查本机组件」。
+- 不上传 Codex 对话、日志、项目路径、进程信息或源码片段。
+- 不包含 analytics、telemetry、crash reporting、广告或追踪 SDK。
+- Chrome 扩展没有 `host_permissions`，也不注入 content script。
+- Native Host 只接受固定 API 路由，不接受任意 SQL、shell 命令或文件路径。
+
+更完整的说明见 [PRIVACY.md](./PRIVACY.md)。
 
 ## 数据源
 
-- `~/.codex/state_5.sqlite`: 对话元数据、项目路径、标题、模型、Git 分支和 rollout 路径。
-- `~/.codex/logs_2.sqlite`: 日志行、thread 与 process 的关联、日志等级和最近活跃时间。
-- `~/.codex/sessions/**/rollout-*.jsonl`: 对话历史与工具调用时间线。
-- `~/.codex/shell_snapshots/*.sh`: Codex 记录的 shell 快照。
+| 数据源 | goblin 读取的内容 |
+| --- | --- |
+| `~/.codex/state_5.sqlite` | 对话元数据、项目路径、标题、模型、Git 分支和 rollout 路径 |
+| `~/.codex/logs_2.sqlite` | 日志行、thread 与 process 的关联、日志等级和最近活跃时间 |
+| `~/.codex/sessions/**/rollout-*.jsonl` | 对话历史与工具调用时间线 |
+| `~/.codex/shell_snapshots/*.sh` | Codex 记录的 shell 快照 |
 
 ## API
 
-- `GET /api/overview`: 项目总览、最近对话、进程线索。
-- `GET /api/project?cwd=/path/to/project`: 单个项目下的对话和进程聚合。
-- `GET /api/thread/:id`: 单个对话的 rollout 时间线、日志、进程和 shell 快照。
-- `GET /api/processes`: 按进程聚合的日志与关联对话。
-- `GET /api/sources`: 当前数据源可用性。
+| 路由 | 返回内容 |
+| --- | --- |
+| `GET /api/overview` | 项目总览、最近对话、进程线索 |
+| `GET /api/project?cwd=/path/to/project` | 单个项目下的对话和进程聚合 |
+| `GET /api/thread/:id` | 单个对话的 rollout 时间线、日志、进程和 shell 快照 |
+| `GET /api/processes` | 按进程聚合的日志与关联对话 |
+| `GET /api/sources` | 当前数据源可用性 |
 
 ## 开发检查
+
+发布变更前建议跑这两个检查：
 
 ```bash
 npm test

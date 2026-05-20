@@ -3,10 +3,10 @@
 [English](./README.md) | [中文](./README.zh-CN.md)
 
 <p align="center">
-  <img src="./public/assets/goblin-logo.png" alt="goblin logo" width="180" />
+  <img src="./public/assets/goblin-logo.png" alt="goblin logo" width="150" />
 </p>
 
-<p>
+<p align="center">
   <img src="./docs/assets/badge-node.svg" alt="Node.js >= 20" height="28" />
   <img src="./docs/assets/badge-chrome.svg" alt="Chrome Extension" height="28" />
   <img src="./docs/assets/badge-sqlite.svg" alt="SQLite CLI" height="28" />
@@ -16,73 +16,75 @@
 
 <img src="./docs/assets/readme-hero.svg" alt="goblin local Codex project viewer" width="100%" />
 
-goblin is a local-first viewer for Codex projects, conversations, conversation history, log-backed process traces, and shell snapshots.
+goblin is a local-first console for Codex projects. It turns the data already stored under `~/.codex` into a browsable dashboard for projects, conversations, rollout history, process clues, shell snapshots, and token usage.
 
-It reads data from the current machine only. It does not upload, track, inject web pages, or phone home. The web UI and Chrome extension both state clearly: **All data is read and displayed only on this machine**.
+The privacy rule is intentionally small: **all data is read and displayed only on this machine**. goblin does not upload, track, inject pages, or call cloud services.
 
-## Features
+## What It Shows
 
-- Project overview: group Codex-managed work by workspace directory.
-- Conversation browser: inspect titles, models, branches, token usage, archive state, and update time.
-- History timeline: parse rollout JSONL into user messages, assistant messages, and tool calls.
-- Process traces: aggregate `process_uuid` records from Codex logs and enrich active processes with local `ps` output.
-- Shell snapshots: link saved Codex shell snapshots back to related threads.
-- Bilingual UI: Chinese is the default, with an English switch in the top bar.
-- Chrome extension: use the dashboard without starting a local HTTP server.
-
-## Local-First Privacy
-
-goblin keeps the boundary small and explicit:
-
-- No uploads of conversations, logs, project paths, process data, or source snippets.
-- No analytics, telemetry, crash reporting, ads, or tracking SDKs.
-- The Chrome extension has no `host_permissions` and does not inject content scripts.
-- The Native Host accepts fixed API routes only. It rejects arbitrary SQL, shell commands, and file paths.
-
-See [PRIVACY.md](./PRIVACY.md) for the full privacy note.
-
-## Dependencies
-
-goblin has no npm runtime dependencies. It uses Node.js standard library APIs and a few local system tools.
-
-| Dependency | Logo | Purpose | Requirement |
-| --- | --- | --- | --- |
-| Node.js | <img src="./docs/assets/badge-node.svg" alt="Node.js" height="24" /> | Run the local web server, Native Host, tests, and extension build script. | `>=20` |
-| Google Chrome | <img src="./docs/assets/badge-chrome.svg" alt="Chrome" height="24" /> | Load the unpacked extension and provide Native Messaging. | Manifest V3 |
-| SQLite CLI | <img src="./docs/assets/badge-sqlite.svg" alt="SQLite" height="24" /> | Read Codex `state_5.sqlite` and `logs_2.sqlite`. | `sqlite3` command |
-| Codex local cache | <img src="./docs/assets/badge-codex.svg" alt="Codex" height="24" /> | Provide project, thread, rollout, log, and shell snapshot data. | Default `~/.codex` |
+| Area | Use it to answer | View |
+| --- | --- | --- |
+| Projects | Which workspaces are active, expensive, or recently touched? | Project list, summary cards, token atlas |
+| Conversations | Which threads used the most tokens or produced snapshots? | Searchable thread list, Top-N, Pareto, table |
+| Timeline | What happened inside one Codex thread? | User messages, assistant messages, tool calls, outputs |
+| Processes | Which local process clues appear in Codex logs? | Active process cards and process-centered traces |
+| Tokens | How did token usage move over time? | Line chart across all projects or one selected project |
+| Extension | Can I open the dashboard without a local HTTP server? | Chrome popup with Native Messaging |
 
 ## Quick Start
+
+### 1. Prerequisites
+
+| Dependency | Purpose | Requirement |
+| --- | --- | --- |
+| Node.js | Run the local server, tests, Native Host, and extension build scripts. | `>=20` |
+| SQLite CLI | Read Codex `state_5.sqlite` and `logs_2.sqlite`. | `sqlite3` command |
+| Codex local cache | Provide project, thread, rollout, log, and snapshot data. | Default `~/.codex` |
+| Google Chrome | Load the unpacked extension and use Native Messaging. | Manifest V3 |
+
+goblin has no npm runtime dependencies.
+
+### 2. Run The Web UI
 
 ```bash
 npm run dev
 ```
 
-The default URL is `http://127.0.0.1:3001`. You can override the port or Codex data directory:
+Open `http://127.0.0.1:3001`.
+
+You can override the port or Codex data directory:
 
 ```bash
 PORT=3010 CODEX_HOME=/path/to/.codex npm run dev
 ```
 
-The web UI opens in Chinese by default. Use the language selector in the top bar to switch to English; the preference is stored locally in the browser.
+The UI opens in Chinese by default. Use the language selector in the top bar to switch to English; the preference is stored in local browser storage only.
 
 ## Screenshots
 
+The screenshots below use sanitized demo data so paths, thread titles, and usage numbers are safe to share.
+
+### Dashboard
+
+The main view keeps the operating surface dense: metric cards at the top, projects on the left, conversations in the center, and the selected thread timeline on the right.
+
+<img src="./docs/assets/readme-dashboard-en.png" alt="goblin dashboard in English" width="100%" />
+
 ### Project Atlas
 
-Click **Projects** to open the project-level token atlas. The default bubble chart is draggable, and the same view can switch to Top-N bars, Pareto, Treemap, or a table.
+Click **Projects** to open the project-level token atlas. The default bubble chart is draggable, and the same page can switch to Top-N bars, Pareto, Treemap, or a sortable table.
 
 <img src="./docs/assets/readme-project-atlas-en.png" alt="Project token atlas in English" width="100%" />
 
 ### Token Timeline
 
-Click **Tokens** to inspect token usage over time. You can keep all projects selected or filter the line chart to a single project.
+Click **Tokens** to inspect usage over time. Keep all projects selected or filter the line chart to one workspace.
 
 <img src="./docs/assets/readme-token-line-en.png" alt="Token usage line chart in English" width="100%" />
 
 ## Chrome Extension
 
-The extension version does not require a local HTTP server. Chrome renders the UI, and a local Native Host reads Codex data on demand through Native Messaging.
+The extension renders the same dashboard without starting the local HTTP server. Chrome talks to a local Native Host, and the Native Host reads only the allowlisted Codex data routes.
 
 ```text
 Chrome Extension UI
@@ -91,13 +93,19 @@ Chrome Extension UI
   -> allowlisted ~/.codex data sources
 ```
 
-Build the extension directory:
+### 1. Build The Extension
 
 ```bash
 npm run build:extension
 ```
 
-Open `chrome://extensions`, enable Developer Mode, and load `dist/chrome-extension` as an unpacked extension. Copy the generated extension ID, then install the Native Host:
+### 2. Load It In Chrome
+
+Open `chrome://extensions`, enable Developer Mode, and load `dist/chrome-extension` as an unpacked extension.
+
+### 3. Install The Native Host
+
+Copy the generated extension ID, then run:
 
 ```bash
 npm run install:native-host -- <extension-id>
@@ -109,34 +117,43 @@ On macOS this writes:
 ~/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.goblin.codex_local_viewer.json
 ```
 
-The Native Host manifest uses `allowed_origins` so only that extension ID can connect.
+The installer also creates an executable launcher next to the manifest. Chrome starts Native Messaging hosts with a minimal GUI environment, so the launcher uses the absolute Node.js executable captured during installation.
 
-The installer also creates an executable launcher next to the manifest. Chrome starts Native Messaging hosts with a minimal GUI environment, so the launcher calls the absolute Node.js executable used during installation instead of relying on `env node`.
+If the popup reports `Native host has exited`, reinstall the Native Host with the current extension ID, reload the extension, and click `Check native host` again.
 
-If the popup reports `Native host has exited`, reinstall the Native Host with the current extension ID:
+## Privacy Model
 
-```bash
-npm run install:native-host -- <extension-id>
-```
+goblin keeps the boundary explicit:
 
-Then reload the extension in `chrome://extensions` and click `Check native host` again.
+- No uploads of conversations, logs, project paths, process data, or source snippets.
+- No analytics, telemetry, crash reporting, ads, or tracking SDKs.
+- The Chrome extension has no `host_permissions` and does not inject content scripts.
+- The Native Host accepts fixed API routes only. It rejects arbitrary SQL, shell commands, and file paths.
+
+See [PRIVACY.md](./PRIVACY.md) for the full privacy note.
 
 ## Data Sources
 
-- `~/.codex/state_5.sqlite`: thread metadata, project paths, titles, models, Git branches, and rollout paths.
-- `~/.codex/logs_2.sqlite`: log rows, thread-to-process links, levels, and recent activity.
-- `~/.codex/sessions/**/rollout-*.jsonl`: conversation history and tool-call timelines.
-- `~/.codex/shell_snapshots/*.sh`: Codex shell snapshots.
+| Source | What goblin reads |
+| --- | --- |
+| `~/.codex/state_5.sqlite` | Thread metadata, project paths, titles, models, Git branches, rollout paths |
+| `~/.codex/logs_2.sqlite` | Log rows, thread-to-process links, levels, recent activity |
+| `~/.codex/sessions/**/rollout-*.jsonl` | Conversation history and tool-call timelines |
+| `~/.codex/shell_snapshots/*.sh` | Saved Codex shell snapshots |
 
 ## API
 
-- `GET /api/overview`: project overview, recent conversations, and process hints.
-- `GET /api/project?cwd=/path/to/project`: conversations and processes for one project.
-- `GET /api/thread/:id`: rollout timeline, logs, processes, and shell snapshots for one thread.
-- `GET /api/processes`: process-centered log and thread aggregation.
-- `GET /api/sources`: data-source availability.
+| Route | Response |
+| --- | --- |
+| `GET /api/overview` | Project overview, recent conversations, and process hints |
+| `GET /api/project?cwd=/path/to/project` | Conversations and processes for one project |
+| `GET /api/thread/:id` | Rollout timeline, logs, processes, and shell snapshots for one thread |
+| `GET /api/processes` | Process-centered log and thread aggregation |
+| `GET /api/sources` | Data-source availability |
 
-## Development Checks
+## Development
+
+Run the focused checks before shipping changes:
 
 ```bash
 npm test
