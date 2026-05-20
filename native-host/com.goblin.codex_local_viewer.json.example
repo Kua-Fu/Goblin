@@ -1,0 +1,7 @@
+{
+  "name": "com.goblin.codex_local_viewer",
+  "description": "goblin native host",
+  "path": "/absolute/path/to/NativeMessagingHosts/com.goblin.codex_local_viewer",
+  "type": "stdio",
+  "allowed_origins": ["chrome-extension://YOUR_EXTENSION_ID/"]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "goblin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first Codex project, conversation, history, and process viewer.",
+  "license": "MIT",
+  "main": "server.js",
+  "scripts": {
+    "build:extension": "node scripts/generate-extension-icons.js && node scripts/build-extension.js",
+    "dev": "node server.js",
+    "generate:icons": "node scripts/generate-extension-icons.js",
+    "install:native-host": "node scripts/install-native-host.js",
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="32" viewBox="0 0 150 32" role="img" aria-label="Node.js >= 20">
+  <rect width="150" height="32" rx="8" fill="#1f7a3f"/>
+  <circle cx="18" cy="16" r="9" fill="#ffffff" opacity=".18"/>
+  <path d="M18 7.5 25.4 11.8v8.4L18 24.5l-7.4-4.3v-8.4L18 7.5Z" fill="#ffffff"/>
+  <path d="M15.2 19.6v-7.2h2.2l3.4 4.7v-4.7h2.2v7.2h-2.2l-3.4-4.7v4.7h-2.2Z" fill="#1f7a3f"/>
+  <text x="36" y="21" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700">Node.js >=20</text>
+</svg>
