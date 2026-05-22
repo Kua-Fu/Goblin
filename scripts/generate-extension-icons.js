@@ -29,6 +29,8 @@ function runImageMagick(command) {
     execFileSync(command, [
       sourceImage,
       "-auto-orient",
+      "-background",
+      "none",
       "-resize",
       `${size}x${size}^`,
       "-gravity",

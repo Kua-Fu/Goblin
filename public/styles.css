@@ -130,12 +130,11 @@ a:focus-visible {
   height: 48px;
   flex: 0 0 auto;
   border-radius: 8px;
-  background: #182033;
-  object-fit: cover;
+  background: transparent;
+  object-fit: contain;
   object-position: 50% 42%;
   box-shadow:
-    0 14px 28px rgba(15, 23, 42, 0.16),
-    0 0 0 1px rgba(15, 23, 42, 0.06);
+    0 14px 28px rgba(15, 23, 42, 0.12);
 }
 
 h1,

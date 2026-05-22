@@ -41,9 +41,9 @@ header {
   width: 40px;
   height: 40px;
   flex: 0 0 auto;
-  border-radius: 11px;
-  background: #10203f;
-  object-fit: cover;
+  border-radius: 0;
+  background: transparent;
+  object-fit: contain;
   object-position: 50% 42%;
   filter: drop-shadow(0 8px 12px rgba(21, 31, 45, 0.18));
 }
